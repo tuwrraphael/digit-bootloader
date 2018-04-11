@@ -59,14 +59,12 @@
 #include "app_error_weak.h"
 #include "nrf_bootloader_info.h"
 
-#define BOOTLOADER_BUTTON   (BSP_BUTTON_3)          /**< Button for entering DFU mode. */
 
 void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
 {
     NRF_LOG_ERROR("Received a fault! id: 0x%08x, pc: 0x%08x, info: 0x%08x", id, pc, info);
     NVIC_SystemReset();
 }
-
 
 void app_error_handler_bare(uint32_t error_code)
 {
@@ -75,33 +73,10 @@ void app_error_handler_bare(uint32_t error_code)
     NVIC_SystemReset();
 }
 
-
-/**@brief Function for initialization of LEDs. */
-static void leds_init(void)
-{
-    bsp_board_leds_init();
-    bsp_board_led_on(BSP_BOARD_LED_2);
-}
-
-
-/**@brief Function for initializing the button module. */
-static void buttons_init(void)
-{
-    nrf_gpio_cfg_sense_input(BOOTLOADER_BUTTON,
-                             BUTTON_PULL,
-                             NRF_GPIO_PIN_SENSE_LOW);
-}
-
-
 /**@brief Implementation to use button press to enter bootloader
  */
 bool nrf_dfu_button_enter_check(void)
 {
-    if (nrf_gpio_pin_read(BOOTLOADER_BUTTON) == 0)
-    {
-        return true;
-    }
-    
     return false;
 }
 
@@ -115,9 +90,6 @@ int main(void)
     NRF_LOG_DEFAULT_BACKENDS_INIT();
 
     NRF_LOG_INFO("Inside main");
-
-    leds_init();
-    buttons_init();
 
     ret_val = nrf_bootloader_init();
     APP_ERROR_CHECK(ret_val);

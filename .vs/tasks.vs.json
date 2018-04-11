@@ -1,0 +1,17 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskName": "flash",
+      "appliesTo": "pca10040/armgcc/Makefile",
+      "type": "launch",
+      "command": "make",
+      "args": [
+        "flash_dap",
+        "-C",
+        "${workspaceRoot}/pca10040/armgcc"
+      ],
+      "contextType": "custom"
+    }
+  ]
+}

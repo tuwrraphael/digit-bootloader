@@ -2,7 +2,7 @@ PROJECT_NAME     := secure_dfu_ble_s132_pca10040
 TARGETS          := nrf52832_xxaa_s132
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ../../../../..
+SDK_ROOT := $(NRF_SDK_ROOT)
 PROJ_DIR := ../..
 
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa_s132.out: \
@@ -27,7 +27,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/strerror/nrf_strerror.c \
   $(SDK_ROOT)/components/libraries/sha256/sha256.c \
   $(PROJ_DIR)/../dfu_req_handling/dfu-cc.pb.c \
-  $(PROJ_DIR)/../dfu_req_handling/dfu_public_key.c \
+  $(PROJ_DIR)/dfu_public_key.c \
   $(PROJ_DIR)/../dfu_req_handling/dfu_req_handling.c \
   $(SDK_ROOT)/components/boards/boards.c \
   $(SDK_ROOT)/components/drivers_nrf/clock/nrf_drv_clock.c \
@@ -122,7 +122,7 @@ INC_FOLDERS += \
 
 # Libraries common to all targets
 LIB_FILES += \
-  $(SDK_ROOT)/external/micro-ecc/nrf52hf_armgcc/armgcc/micro_ecc_lib_nrf52.a \
+  ../../../../../external/micro-ecc/nrf52hf_armgcc/armgcc/micro_ecc_lib_nrf52.a \
 
 # Optimization flags
 OPT = -Os -g3
@@ -228,3 +228,9 @@ SDK_CONFIG_FILE := ../config/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
 sdk_config:
 	java -jar $(CMSIS_CONFIG_TOOL) $(SDK_CONFIG_FILE)
+
+$(OUTPUT_DIRECTORY)/merged.hex: $(OUTPUT_DIRECTORY)/nrf52832_xxaa_s132.hex
+	D:/environments/srecord-1.63-win32/srec_cat.exe $(SDK_ROOT)/components/softdevice/s132/hex/s132_nrf52_5.0.0_softdevice.hex -Intel $(OUTPUT_DIRECTORY)/nrf52832_xxaa_s132.hex -Intel -o $(OUTPUT_DIRECTORY)/merged.hex -Intel
+
+flash_dap: $(OUTPUT_DIRECTORY)/merged.hex
+	xcopy $(OUTPUT_DIRECTORY)\merged.hex E:\
